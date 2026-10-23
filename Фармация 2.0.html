@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Фармация 2.0: игры</title>
+<style>
+:root{color-scheme:light;--bg:#e3d9ff;--card:#fff;--ink:#2b2a63;--mut:#6a6a9e;--pk:#7b6cf6;--pk2:#f0653f;--ok:#c8f2d4;--okb:#3bb36b;--bad:#ffd6d6;--badb:#e05555;--line:#d6d2f7;--sel:#ebe6ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#bfdcff 0%,#d9ccff 42%,#ffd3bd 100%) fixed;color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:15px}
+.wrap{max-width:560px;margin:0 auto;padding:14px 12px 30px}
+h1{margin:4px 0 2px;text-align:center;font-size:22px;color:#5a47d6}
+.lead{text-align:center;color:var(--mut);font-size:13px;margin:0 0 10px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px}
+nav button{flex:0 0 auto;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:7px 11px;font-size:13px;font-weight:600;cursor:pointer}
+nav button.on{background:linear-gradient(135deg,#5f8dff,#9b5de5);border-color:transparent;color:#fff}
+.card{background:rgba(255,255,255,.9);border:2px solid #fff;border-radius:24px;padding:13px 14px;margin-bottom:13px;box-shadow:0 8px 20px rgba(100,80,200,.16)}
+.card h3{margin:0;font-size:16px}
+.sub{color:var(--mut);font-size:12.5px;margin:2px 0 8px}
+.big{font-size:18px;font-weight:700;margin:4px 0}
+.ru{color:var(--mut);font-size:13.5px;margin:0 0 6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fc{border:2px solid var(--line);background:var(--sel);color:var(--ink);border-radius:16px;min-height:78px;padding:8px;font-size:14px;cursor:pointer;font-family:inherit}
+.fc i{display:block;font-style:normal;font-size:22px}
+.fc .bk{display:none;font-weight:700}.fc.on .bk{display:block}.fc.on .f{display:none}
+.fc.on{background:var(--ok);border-color:var(--okb)}
+.fc small{display:block;color:var(--pk2);font-weight:400;margin-top:2px}
+.mt{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mt>div{display:flex;flex-direction:column;gap:6px}
+.pill,.opt{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 8px;font-size:14px;font-family:inherit;cursor:pointer;text-align:center}
+.pill.sel{background:var(--sel);border-color:var(--pk)}
+.pill.ok,.opt.ok{background:var(--ok);border-color:var(--okb)}
+.pill.bad,.opt.bad{background:var(--bad);border-color:var(--badb)}
+.pill:disabled{opacity:.75}
+.opts{display:grid;gap:7px;margin-top:6px}
+input{width:100%;border:2px solid var(--line);border-radius:14px;padding:10px;font-size:16px;background:var(--card);color:var(--ink);margin:6px 0}
+.btn{border:0;background:linear-gradient(135deg,#6a8dff,#9b5de5);color:#fff;border-radius:14px;padding:9px 14px;font-size:14px;font-weight:700;cursor:pointer;margin-right:6px}
+.btn.g{background:var(--sel);color:var(--ink)}
+.msg{min-height:20px;margin-top:6px;font-size:13.5px;font-weight:600}
+.end{font-size:17px;font-weight:700;margin:6px 0 10px}
+.txt p{margin:0 0 9px}.txt .en{font-size:15.5px;margin:0}.txt mark{background:var(--sel);color:var(--pk2);border-radius:6px;padding:0 3px;font-weight:700}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:700;font-size:14px}
+.hp{flex:1;height:12px;background:var(--line);border-radius:8px;overflow:hidden}.hp i{display:block;height:100%;background:var(--badb);transition:width .4s}
+u{text-decoration:none;border-bottom:3px solid var(--pk);padding:0 4px}
+.mem{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mc{min-height:66px;border:2px solid var(--line);background:var(--sel);border-radius:14px;font-size:12px;font-family:inherit;color:var(--ink);padding:4px;cursor:pointer}.mc.up{background:var(--card);border-color:var(--pk)}.mc.ok{background:var(--ok);border-color:var(--okb)}
+.panel{display:none}.panel.on{display:block}
+</style></head><body><div class="wrap">
+<h1>🌅 Фармация 2.0</h1><p class="lead">Игры на все слова и выражения · 3 раздела, тексты, повтор и босс</p>
+<nav id="nav"></nav><div id="app"></div></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s),sh=a=>[...a].sort(()=>Math.random()-.5);
+const fmt=t=>t.replace(/[А-ЯЁ]/g,c=>'<b>'+c.toLowerCase()+'</b>');
+const norm=s=>s.toLowerCase().replace(/-/g,' ').replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();
+const S=[
+{e:"🏥",n:"Аптека и рецепт",w:[
+["pharmacy","аптека","🏥","фАрмаси"],["pharmacist","фармацевт","👩‍⚕️","фАрмасист"],["prescription","рецепт","📝","прескрИпшн"],
+["prescription department","рецептурный отдел","📋","прескрИпшн дипАртмент"],["to dispense drugs","отпускать лекарство","🤲","ту диспЕнс драгз"],
+["adverse effect","побочное действие","⚠️","Адвёс ифЕкт"],["therapeutic action","терапевтическое действие","✨","сЕрэпьЮтик Экшн"],
+["drug for internal use","лекарство для внутреннего применения","💊","драг фо интЁнл юс"],["drug for external use","лекарство для наружного применения","🧴","драг фо икстЁнл юс"],["chemist’s department","отдел ручной продажи","🛍️","кЕмистс дипАртмент"],["chemist’s shop","аптека (второе название)","🏪","кЕмистс шоп"]],
+f:[["I work in a ___.","Я работаю в аптеке.","pharmacy",["pharmacy","tablet","drops"]],
+["The doctor gives me a ___.","Врач даёт мне рецепт.","prescription",["prescription","ointment","powder"]],
+["She is a ___.","Она фармацевт.","pharmacist",["pharmacist","solution","suppository"]],
+["This ___ is for internal use.","Это лекарство для внутреннего применения.","drug",["drug","hour","stomach"]],
+["The pharmacist can ___ the drug.","Фармацевт может отпустить лекарство.","dispense",["dispense","shake","powder"]]]},
+{e:"🍼",n:"Как принимать",w:[
+["to take a drug","принимать лекарство","💊","ту тэйк э драг"],["every hour","каждый час","⏰","Эври Ауэ"],
+["on an empty stomach","натощак","🌅","он эн Эмпти стАмэк"],["before meals","перед едой","🍽️","бифО мийлз"],["after meals","после еды","🥣","Афтэ мийлз"],
+["drops","капли","💧","дропс"],["ointment","мазь","🧴","Ойнтмент"],["mixture","микстура","🍼","мИкстчэ"],["tincture","настойка","🌿","тИнктчэ"],
+["to shake the bottle with the mixture before use","встряхнуть бутылку с микстурой перед использованием","🫙","ту шэйк зэ бОтл виз зэ мИкстчэ бифО юс"],["a tablespoonful twice a day","по одной столовой ложке 2 раза в день","🥄","э тЭйблспунфул туАйс э дэй"],["to drop seven drops","накапать семь капель","💦","ту дроп сЕвн дропс"],["to put the ointment on","намазать мазь","🖐️","ту пут зи Ойнтмент он"],["to take ten drops of the tincture","принять 10 капель настойки","🌱","ту тэйк тэн дропс ов зэ тИнктчэ"]],
+f:[["Take the drug ___ hour.","Принимай лекарство каждый час.","every",["every","empty","shake"]],
+["Put the ___ on your hand.","Нанеси мазь на руку.","ointment",["ointment","drops","tincture"]],
+["Shake the ___ with the mixture.","Встряхни бутылку с микстурой.","bottle",["bottle","meals","hour"]],
+["Take ten ___ of the tincture.","Прими десять капель настойки.","drops",["drops","meals","hour"]],
+["Don’t eat. Take it on an ___ stomach.","Не ешь. Прими натощак.","empty",["empty","every","after"]]]},
+{e:"🍵",n:"Формы лекарств",w:[
+["decoction","отвар","🍵","дикОкшн"],["pill","пилюля","🔴","пил"],["powder","порошок","🥄","пАудэ"],["solution","раствор","🧪","солЮшн"],
+["suppository","свеча","🕯️","сапОзитри"],["tablet","таблетка","🤍","тАблет"],["coated tablet","таблетка, покрытая оболочкой","🍬","кОутид тАблет"],
+["half tablet","полтаблетки","🌗","хаф тАблет"],["to powder drug","растирать лекарство в порошок","🔨","ту пАудэ драг"],["to give decoction three times a day after meal","давать отвар 3 раза в день после еды","🫖","ту гив дикОкшн сри тАймз э дэй Афтэ мийл"],["pain-relieving pill","обезболивающая пилюля","😌","пэйн-рилИвин пил"],["compound powder","сложный порошок","🥣","кОмпаунд пАудэ"],["dust, powder","присыпка","☁️","даст, пАудэ"],["to give solution according to the doctor’s instruction","давать раствор в соответствии с предписанием врача","📃","ту гив солЮшн акОдин ту зэ дОктэз инстрАкшн"],["to use suppositories","применять свечи","🕯️","ту юз сапОзитриз"],["to take tablets three times a day","принимать таблетки 3 раза в день","⏰","ту тэйк тАблетс сри тАймз э дэй"]],
+f:[["I take one ___ after meals.","Я принимаю одну таблетку после еды.","tablet",["tablet","suppository","ointment"]],
+["This ___ is from herbs.","Этот отвар из трав.","decoction",["decoction","tablet","pill"]],
+["It is a ___ tablet.","Это таблетка, покрытая оболочкой.","coated",["coated","empty","half"]],
+["I take a ___ tablet.","Я принимаю половину таблетки.","half",["half","coated","every"]],
+["The doctor says: use ___.","Врач говорит: применяй свечи.","suppositories",["suppositories","drops","ointment"]]]}
+];
+const wq=(w,pool,d)=>{const a=w[d?1:0],o=[a,...sh(pool.filter(x=>x!==w)).slice(0,3).map(x=>x[d?1:0])];
+ return{q:d?`<div class=big>${w[2]} ${w[0]}</div><div class=sub>Выбери перевод</div>`:`<div class=big>${w[2]} ${w[1]}</div><div class=sub>Как по-английски?</div>`,a,o}};
+const fq=f=>({q:`<div class=big>${f[0].replace('___','<u>＿＿＿</u>')}</div><div class=ru>${f[1]}</div>`,a:f[2],o:f[3]});
+function box(t,s){const d=document.createElement('section');d.className='card';d.innerHTML=`<h3>${t}</h3><div class=sub>${s}</div><div class=body></div>`;return[d,$('.body',d)]}
+function quiz(b,qs,hook){let i=0,sc=0;const r=()=>{
+ if(i>=qs.length){b.innerHTML=`<div class=end>${sc}/${qs.length} ${sc==qs.length?'🎉 Супер!':'💪 Ещё разок?'}</div><button class=btn>Ещё раз</button>`;
+  $('.btn',b).onclick=()=>{i=0;sc=0;qs=sh(qs);r()};return}
+ const q=qs[i];b.innerHTML=`<div class=sub>${i+1}/${qs.length}</div>${q.q}<div class=opts>${sh(q.o).map(x=>`<button class=opt>${x}</button>`).join('')}</div>`;
+ b.querySelectorAll('.opt').forEach(k=>k.onclick=()=>{const ok=k.textContent===q.a;
+  b.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(x.textContent===q.a)x.classList.add('ok')});
+  if(!ok)k.classList.add('bad');else sc++;const u=$('u',b);if(u)u.textContent=q.a;
+  setTimeout(()=>{if(hook&&hook(ok))return;i++;r()},ok?700:1400)})};r()}
+function cards(s){const[d,b]=box('🃏 Карточки','Тап-тап: нажми на карточку — увидишь перевод');b.className+=' grid';
+ const seen=new Set(),c=document.createElement('div');c.className='sub';c.textContent='Открыто: 0/'+s.w.length;
+ s.w.forEach((w,i)=>{const k=document.createElement('button');k.className='fc';
+  k.innerHTML=`<span class=f><i>${w[2]}</i>${w[0]}</span><span class=bk>${w[1]}<small>[${fmt(w[3])}]</small></span>`;
+  k.onclick=()=>{k.classList.toggle('on');seen.add(i);c.textContent='Открыто: '+seen.size+'/'+s.w.length};b.append(k)});
+ d.append(c);return d}
+function match(s){const[d,b]=box('🔗 Сопоставь','Раунд из 8 пар: нажми английское слово, потом его перевод');b.className+=' mt';
+ let sel=null,W=sh(s.w).slice(0,8),left=W.length,err=0;const msg=document.createElement('div');msg.className='msg';
+ const col=side=>{const c=document.createElement('div');sh(W).forEach(w=>{const k=document.createElement('button');k.className='pill';
+  k.textContent=side?w[2]+' '+w[0]:w[1];k.onclick=()=>{
+   if(!sel||sel.side===side){if(sel)sel.k.classList.remove('sel');sel={k,w,side};k.classList.add('sel');return}
+   if(sel.w===w){[sel.k,k].forEach(x=>{x.classList.remove('sel');x.classList.add('ok');x.disabled=true});left--;
+    if(!left){msg.innerHTML='🎉 Все пары найдены! Ошибок: '+err+' <button class=btn>Новый раунд</button>';$('.btn',msg).onclick=()=>d.replaceWith(match(s))}}
+   else{err++;const o=sel.k;[o,k].forEach(x=>x.classList.add('bad'));setTimeout(()=>[o,k].forEach(x=>x.classList.remove('bad','sel')),500)}
+   sel=null};c.append(k)});return c};
+ b.append(col(1),col(0));d.append(msg);return d}
+function pick(s){const[d,b]=box('👀 Найди перевод','Выбери правильный русский вариант');quiz(b,sh(s.w).map(w=>wq(w,s.w,1)));return d}
+function fill(f,t,sb){const[d,b]=box(t,sb);quiz(b,sh(f).map(fq));return d}
+function type(s){const[d,b]=box('⌨️ Напиши перевод','Напиши по-английски');let q=sh(s.w),i=0,ok=0;
+ const r=()=>{if(i>=q.length){b.innerHTML=`<div class=end>Готово! С первой попытки: ${ok}/${q.length}</div><button class=btn>Ещё раз</button>`;
+  $('.btn',b).onclick=()=>{i=0;ok=0;q=sh(q);r()};return}
+  const w=q[i];let t=0;b.innerHTML=`<div class=sub>${i+1}/${q.length}</div><div class=big>${w[2]} ${w[1]}</div>
+  <input autocomplete=off autocapitalize=off spellcheck=false placeholder="по-английски"><button class=btn>Проверить</button><button class="btn g">Подсказка</button><div class=msg></div>`;
+  const inp=$('input',b),m=$('.msg',b);
+  const go=()=>{if(norm(inp.value)===norm(w[0])){if(!t)ok++;m.textContent='✅ Верно!';m.style.color='var(--okb)';setTimeout(()=>{i++;r()},700)}
+   else{t++;m.style.color='var(--badb)';if(t>=3){m.textContent='Ответ: '+w[0];setTimeout(()=>{i++;r()},1800)}else m.textContent='Почти! Попробуй ещё 🙈'}};
+  $('.btn',b).onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
+  $('.g',b).onclick=()=>{m.style.color='var(--pk2)';m.textContent='Подсказка: '+w[0].replace(/(\S)(\S*)/g,(_,a,r)=>a+r.replace(/./g,'_'))}};r();return d}
+function secPanel(s){const p=document.createElement('div');p.append(cards(s),memory(s),listen(s),sort(s),scr(s),order(s),blitz(s),fill(s.f,'✏️ Выбери слово','Вставь слово в предложение'));return p}
+function karina(){const p=document.createElement('div');
+ const L=[["<mark>Karina</mark> is a feldsher from Ulyanovsk.","Карина — фельдшер из Ульяновска."],
+ ["She works in a <mark>pharmacy</mark>.","Она работает в аптеке."],
+ ["A woman comes with a <mark>prescription</mark>.","Женщина приходит с рецептом."],
+ ["Karina gives her a <mark>tablet</mark> and an <mark>ointment</mark>.","Карина даёт ей таблетку и мазь."],
+ ["“Take one tablet <mark>after meals</mark>,” she says.","«Принимайте одну таблетку после еды», — говорит она."],
+ ["“<mark>Shake the bottle</mark> with the <mark>mixture</mark> before use.”","«Встряхните бутылку с микстурой перед использованием.»"],
+ ["“Take ten <mark>drops</mark> of the <mark>tincture</mark> <mark>before meals</mark>.”","«Примите десять капель настойки перед едой.»"],
+ ["“No <mark>adverse effect</mark>,” says Karina.","«Побочных действий нет», — говорит Карина."],
+ ["The woman says, “Thank you!”","Женщина говорит: «Спасибо!»"],
+ ["Karina is happy.","Карина рада."]];
+ const t=document.createElement('section');t.className='card txt';t.innerHTML='<h3>📖 Карина из Ульяновска</h3><div class=sub>Прочитай текст. Слова из раздела выделены</div>'+L.map(l=>`<p><span class=en>${l[0]}</span><br><span class=ru>${l[1]}</span></p>`).join('');
+ p.append(t,fill([["Karina works in a ___.","Карина работает в аптеке.","pharmacy",["pharmacy","tablet","bottle"]],
+ ["A woman comes with a ___.","Женщина приходит с рецептом.","prescription",["prescription","mixture","powder"]],
+ ["Take one tablet ___ meals.","Принимайте одну таблетку после еды.","after",["after","every","empty"]],
+ ["Shake the ___ before use.","Встряхните бутылку перед использованием.","bottle",["bottle","drops","hour"]],
+ ["Take ten drops of the ___.","Примите десять капель настойки.","tincture",["tincture","ointment","pill"]]],'✏️ Вопросы к тексту','Вставь слово'));return p}
+function boss(){const[d,b]=box('👑 Финальный босс','Король Микроб боится твоих знаний: 3 жизни, 8 попаданий!');
+ const all=S.flatMap(s=>s.w),fs=S.flatMap(s=>s.f);
+ const start=()=>{let hp=8,lives=3;b.innerHTML='<div class=bar></div><div class=ar></div>';const bar=$('.bar',b),ar=$('.ar',b);
+  const upd=()=>bar.innerHTML=`<span>🦠</span><div class=hp><i style="width:${hp*12.5}%"></i></div><span>${'❤️'.repeat(lives)||'💔'}</span>`;upd();
+  const qs=sh([...sh(all).slice(0,8).map((w,i)=>wq(w,all,i%2)),...sh(fs).slice(0,4).map(fq)]);
+  const end=m=>{ar.innerHTML=`<div class=end>${m}</div><button class=btn>Ещё раз</button>`;$('.btn',ar).onclick=start};
+  quiz(ar,qs,ok=>{if(ok)hp--;else lives--;upd();
+   if(hp<=0){end('🏆 Король Микроб побеждён! Ты молодец!');return true}
+   if(lives<=0){end('💔 Микроб победил... Попробуй ещё раз!');return true}})};
+ start();return d}
+function tf(s){const[d,b]=box('⚖️ Верно или нет?','Подходит ли перевод к слову?');
+ quiz(b,sh(s.w).slice(0,8).map(w=>{const g=Math.random()<.5,x=g?w:sh(s.w.filter(y=>y!==w))[0];
+  return{q:`<div class=big>${w[2]} ${w[0]}</div><div class=ru>${x[1]}</div>`,a:g?'✅ Верно':'❌ Неверно',o:['✅ Верно','❌ Неверно']}}));return d}
+function order(s){const[d,b]=box('🧩 Собери фразу','Нажимай слова по порядку');
+ const P=sh(s.w.filter(w=>w[0].split(' ').length>2));let i=0;
+ const r=()=>{const w=P[i++%P.length],ws=w[0].split(' ');let k=0;
+  b.innerHTML=`<div class=ru>${w[2]} ${w[1]}</div><div class=big style="min-height:26px"></div><div class=opts style="display:flex;flex-wrap:wrap">${sh(ws).map(x=>`<button class=opt>${x}</button>`).join('')}</div>`;
+  const o=$('.big',b);
+  b.querySelectorAll('.opt').forEach(x=>x.onclick=()=>{if(x.textContent===ws[k]){o.textContent+=(k?' ':'')+x.textContent;x.disabled=true;x.classList.add('ok');
+   if(++k==ws.length){o.style.color='var(--okb)';setTimeout(r,1300)}}else{x.classList.add('bad');setTimeout(()=>x.classList.remove('bad'),400)}})};
+ r();return d}
+const tx=(t,L,f)=>{const c=document.createElement('section');c.className='card txt';c.innerHTML=`<h3>${t}</h3><div class=sub>Слова из разделов выделены</div>`+L.map(l=>`<p><span class=en>${l[0].replace(/\[(.+?)\]/g,'<mark>$1</mark>')}</span><br><span class=ru>${l[1]}</span></p>`).join('');return[c,fill(f,'✏️ Вопросы к тексту','Вставь слово')]};
+function texts(){const p=karina();[
+["👩‍⚕️ Лена, медсестра",[["Lena is a nurse in a hospital in Kazan.","Лена — медсестра в больнице в Казани."],
+["The doctor writes a [prescription] for a patient.","Врач пишет рецепт для пациента."],
+["Lena gives him a [coated tablet].","Лена даёт ему таблетку, покрытую оболочкой."],
+["“[Take tablets three times a day],” she says.","«Принимайте таблетки 3 раза в день», — говорит она."],
+["“Take a [half tablet] on an [empty stomach].”","«Примите полтаблетки натощак.»"],
+["“Here is a [pain-relieving pill].”","«Вот обезболивающая пилюля.»"],
+["“[Give decoction three times a day after meal],” she says to the mother.","«Давайте отвар 3 раза в день после еды», — говорит она маме."],
+["She can [give solution according to the doctor’s instruction].","Она может давать раствор в соответствии с предписанием врача."],
+["The patient is happy.","Пациент рад."]],
+[["Lena is a ___ in a hospital.","Лена — медсестра в больнице.","nurse",["nurse","pharmacist","tablet"]],
+["The doctor writes a ___.","Врач пишет рецепт.","prescription",["prescription","pill","powder"]],
+["Take a half tablet on an ___ stomach.","Примите полтаблетки натощак.","empty",["empty","every","coated"]],
+["Here is a pain-relieving ___.","Вот обезболивающая пилюля.","pill",["pill","bottle","drops"]]]],
+["🔪 Павел, хирург",[["Pavel is a surgeon in a big hospital.","Павел — хирург в большой больнице."],
+["A patient needs a drug after the operation.","После операции пациенту нужно лекарство."],
+["“This drug has a [therapeutic action],” he says.","«У этого лекарства терапевтическое действие», — говорит он."],
+["“There is an [adverse effect], but it is small.”","«Есть побочное действие, но оно небольшое.»"],
+["“This is a [drug for external use].”","«Это лекарство для наружного применения.»"],
+["“Put the [dust, powder] on the wound.”","«Нанесите присыпку на рану.»"],
+["“Give him a [compound powder], please.”","«Дайте ему сложный порошок, пожалуйста.»"],
+["The nurse can [powder the drug].","Медсестра может растереть лекарство в порошок."],
+["The patient can [use suppositories] too.","Пациент тоже может применять свечи."]],
+[["Pavel is a ___ in a big hospital.","Павел — хирург в большой больнице.","surgeon",["surgeon","dentist","nurse"]],
+["This drug has a therapeutic ___.","У этого лекарства терапевтическое действие.","action",["action","hour","bottle"]],
+["This is a drug for ___ use.","Это лекарство для наружного применения.","external",["external","empty","half"]],
+["Give him a compound ___, please.","Дайте ему сложный порошок, пожалуйста.","powder",["powder","pill","meal"]]]],
+["🦷 Ольга, стоматолог",[["Olga is a dentist from Perm.","Ольга — стоматолог из Перми."],
+["A boy comes with a bad tooth.","Мальчик приходит с больным зубом."],
+["Olga writes a prescription.","Ольга пишет рецепт."],
+["“Go to the [chemist’s shop],” she says.","«Идите в аптеку», — говорит она."],
+["The [prescription department] is on the left.","Рецептурный отдел слева."],
+["In the [chemist’s department] the pharmacist can [dispense drugs].","В отделе ручной продажи фармацевт может отпускать лекарства."],
+["“[Drop seven drops], please.”","«Накапайте семь капель, пожалуйста.»"],
+["“Take [a tablespoonful twice a day].”","«Принимайте по одной столовой ложке 2 раза в день.»"],
+["“[Put the ointment on] and [take the drug] [every hour].”","«Намажьте мазь и принимайте лекарство каждый час.»"]],
+[["Olga is a ___ from Perm.","Ольга — стоматолог из Перми.","dentist",["dentist","surgeon","nurse"]],
+["The prescription ___ is on the left.","Рецептурный отдел слева.","department",["department","stomach","mixture"]],
+["Drop seven ___, please.","Накапайте семь капель, пожалуйста.","drops",["drops","meals","pills"]],
+["Take a tablespoonful ___ a day.","Принимайте по столовой ложке 2 раза в день.","twice",["twice","empty","every"]]]]
+].forEach(([t,L,f])=>p.append(...tx(t,L,f)));return p}
+function review(){const a=S.flatMap(s=>s.w),p=document.createElement('div');
+ p.innerHTML='<section class=card><h3>🔁 Повторяем все выражения</h3><div class=sub>Всё из учебника вперемешку</div></section>';
+ p.append(match({w:a}),memory({w:a}),sort({w:a}),listen({w:a}),blitz({w:a}),order({w:a}));return p}
+function memory(s){const[d,b]=box('🧠 Мемори','Найди пары: слово и перевод');const q=sh(s.w);let pos=0;
+ const r=()=>{const W=[0,1,2,3,4,5].map(j=>q[(pos+j)%q.length]);pos+=6;
+  const C=sh(W.flatMap(w=>[[w,0],[w,1]]));let open=[],left=6,mv=0;
+  b.innerHTML='<div class=mem></div><div class=msg></div>';const g=$('.mem',b),m=$('.msg',b);
+  C.forEach(([w,t])=>{const k=document.createElement('button');k.className='mc';k.textContent='❓';
+   k.onclick=()=>{if(open.length>1||k.classList.contains('up'))return;k.classList.add('up');k.textContent=t?w[1]:w[2]+' '+w[0];open.push([k,w]);
+    if(open.length==2){mv++;const[[a,x],[c,y]]=open;
+     if(x===y){a.classList.add('ok');c.classList.add('ok');open=[];if(!--left){m.innerHTML='🎉 Ходов: '+mv+' <button class=btn>Дальше</button>';$('.btn',m).onclick=r}}
+     else setTimeout(()=>{[a,c].forEach(z=>{z.classList.remove('up');z.textContent='❓'});open=[]},900)}};g.append(k)})};r();return d}
+function listen(s){const[d,b]=box('🎧 Слушай и выбери','Нажми «Послушать» и выбери перевод');
+ const say=t=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.8;speechSynthesis.speak(u)}catch(e){}};
+ quiz(b,sh(s.w).map(w=>{const x=wq(w,s.w,1);x.q=`<button class=btn data-s="${w[0]}">🔊 Послушать</button><div class=sub>Что ты услышал?</div>`;return x}));
+ b.addEventListener('click',e=>{const k=e.target.closest('[data-s]');if(k)say(k.dataset.s)});return d}
+const cat=e=>/^to /.test(e)?3:/hour|stomach|meals|a day|twice/.test(e)?2:/pharmac|chemist|department|^prescription$/.test(e)?1:0;
+function sort(s){const[d,b]=box('🧺 Разложи по корзинам','Куда относится слово?');const G=['💊 Лекарства и действие','🏥 Места, люди, рецепт','⏰ Когда и сколько','🎬 Что делать'];
+ const q=sh(s.w);let pos=0;
+ const r=()=>{const W=Array.from({length:Math.min(8,q.length)},(_,j)=>q[(pos+j)%q.length]);pos+=8;let i=0,ok=0;
+  const n=()=>{if(i>=W.length){b.innerHTML=`<div class=end>${ok}/${W.length} ${ok==W.length?'🎉':'💪'}</div><button class=btn>Дальше</button>`;$('.btn',b).onclick=r;return}
+   const w=W[i];b.innerHTML=`<div class=sub>${i+1}/${W.length}</div><div class=big>${w[2]} ${w[0]}</div><div class=ru>${w[1]}</div><div class=opts style="grid-template-columns:1fr 1fr">${G.map((g,j)=>`<button class=opt data-j=${j}>${g}</button>`).join('')}</div>`;
+   b.querySelectorAll('.opt').forEach(k=>k.onclick=()=>{const c=cat(w[0]),g=+k.dataset.j===c;
+    b.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.j===c)x.classList.add('ok')});if(!g)k.classList.add('bad');else ok++;
+    setTimeout(()=>{i++;n()},g?600:1300)})};n()};r();return d}
+function scr(s){const[d,b]=box('🔤 Буквы-перемешки','Собери слово из букв');const P=sh(s.w.filter(w=>!/[ ,-]/.test(w[0])));let i=0;
+ const r=()=>{const w=P[i++%P.length],a=w[0];let k=0;
+  b.innerHTML=`<div class=ru>${w[2]} ${w[1]}</div><div class=big style="letter-spacing:3px;min-height:28px"></div><div class=opts style="display:flex;flex-wrap:wrap">${sh([...a]).map(x=>`<button class=opt style="min-width:40px">${x}</button>`).join('')}</div>`;
+  const o=$('.big',b);b.querySelectorAll('.opt').forEach(x=>x.onclick=()=>{if(x.textContent===a[k]){o.textContent+=x.textContent;x.disabled=true;x.classList.add('ok');if(++k==a.length){o.style.color='var(--okb)';setTimeout(r,1200)}}else{x.classList.add('bad');setTimeout(()=>x.classList.remove('bad'),400)}})};r();return d}
+function blitz(s){const[d,b]=box('⚡ Блиц 30 секунд','Подходит ли перевод? Отвечай быстро!');
+ const go=()=>{let t=30,sc=0,bad=0,g;const nx=()=>{const w=s.w[Math.random()*s.w.length|0];g=Math.random()<.5;const x=g?w:sh(s.w.filter(y=>y!==w))[0];$('.q',b).innerHTML=`<div class=big>${w[2]} ${w[0]}</div><div class=ru>${x[1]}</div>`};
+  b.innerHTML='<div class=bar><span class=tm>⏱ 30</span><span class=sc>⭐ 0</span></div><div class=q></div><div class=opts style="grid-template-columns:1fr 1fr"><button class="opt y">✅ Верно</button><button class="opt n">❌ Неверно</button></div>';nx();
+  const iv=setInterval(()=>{if(!b.isConnected){clearInterval(iv);return}t--;$('.tm',b).textContent='⏱ '+t;
+   if(t<=0){clearInterval(iv);b.innerHTML=`<div class=end>⭐ Верно: ${sc}, ошибок: ${bad}</div><button class=btn>Ещё раз</button>`;$('.btn',b).onclick=go}},1000);
+  const ans=v=>{if(v===g)sc++;else bad++;$('.sc',b).textContent='⭐ '+sc;nx()};$('.y',b).onclick=()=>ans(true);$('.n',b).onclick=()=>ans(false)};go();return d}
+const T=[...S.map((s,i)=>({n:s.e+' '+(i+1),p:secPanel(s)})),{n:'📖 Тексты',p:texts()},{n:'🔁 Всё',p:review()},{n:'👑 Босс',p:boss()}];
+const nav=$('#nav'),app=$('#app');
+T.forEach((t,i)=>{const k=document.createElement('button');k.textContent=t.n;k.onclick=()=>{
+ nav.querySelectorAll('button').forEach(x=>x.classList.remove('on'));k.classList.add('on');app.innerHTML='';app.append(t.p);window.scrollTo(0,0)};nav.append(k);if(!i)k.click()});
+</script></body></html>
